@@ -47,7 +47,7 @@ public class ConfigureRabbitMq {
 
     @Bean
     MessageListenerAdapter listenerAdapter(ReceiveMessageHandler handler){
-        return new MessageListenerAdapter(handler, "handleMessage");
+        return new MessageListenerAdapter(handler, "extractCorrelationIdFromHeaders");
     }
 
 

@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.javainuse.ConfigureRabbitMq.EXCHANGE_NAME;
+
 @RestController
 public class SendMessageController {
 
     private final RabbitTemplate rabbitTemplate;
     public static final String ROUTING_KEY = "mike.springmessages";
+    public static final String X_TENANT_CODE = "X_TENANT_CODE";
 
     public SendMessageController(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
@@ -21,19 +24,15 @@ public class SendMessageController {
 
     @PostMapping("/send")
     public String sendMessage(@RequestParam String themessage) {
-        rabbitTemplate.convertAndSend(ConfigureRabbitMq.EXCHANGE_NAME,ROUTING_KEY
-                , themessage);
-        rabbitTemplate.convertAndSend(ROUTING_KEY, "", message -> {
-            message.getMessageProperties().getHeaders().put("foo", "bar");
-            message.getMessageProperties().setPriority(10000);
-            return message;
-        });
-//        MessageProperties props = MessagePropertiesBuilder.newInstance().setContentType(MessageProperties.CONTENT_TYPE_JSON).build();
-//        props.setHeader("headerKey1", "headerValue1");
-//
-//        Message msg = new Message("{'body':'value1','body2':value2}".getBytes(), props);
-//
-//        rabbitTemplate.send(ROUTING_KEY, msg);
+//        rabbitTemplate.convertAndSend(ConfigureRabbitMq.EXCHANGE_NAME,ROUTING_KEY
+//                , themessage);
+
+        MessageProperties props = MessagePropertiesBuilder.newInstance().setContentType(MessageProperties.CONTENT_TYPE_JSON).build();
+        props.setHeader(X_TENANT_CODE, "tenanta");
+
+        Message msg = new Message("{'body':'value1','body2':value2}".getBytes(), props);
+
+        rabbitTemplate.send(EXCHANGE_NAME, ROUTING_KEY, msg);
         return "We have sent a message! :" + themessage;
     }
 

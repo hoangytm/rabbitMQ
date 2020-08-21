@@ -4,12 +4,14 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.LongString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Base64;
-import java.util.Map;
 
+import static com.javainuse.ConfigureRabbitMq.QUEUE_NAME;
+import static com.javainuse.ConfigureRabbitMq.QUEUE_NAME2;
 import static com.javainuse.producer.SendMessageController.X_TENANT_CODE;
 
 @Service
@@ -24,30 +26,17 @@ public class ReceiveMessageHandler {
         log.info(encoded);
     }
 
-    protected String extractCorrelationIdFromHeaders(AMQP.BasicProperties properties) throws UnsupportedEncodingException {
+    @RabbitListener(queues = QUEUE_NAME)
+    public void handleBookDocNotifyMessage(Message message, @Header(X_TENANT_CODE) String tenantCode) {
+        System.out.println("i'm coming 2nd");
+        System.out.println(tenantCode);
+        log.error(message.getMessageProperties().getHeaders().get(X_TENANT_CODE).toString());
+    }
 
-        String decodedCorrelationId = null;
-
-        if (properties.getHeaders() != null) {
-
-            try {
-                Object rawCorrelationId = properties.getHeaders().get(X_TENANT_CODE);
-
-                if (rawCorrelationId == null) {
-                    log.info("no correlationId provided in headers");
-                    return null;
-                }
-
-                byte[] correlationIdAsByteArray = ((LongString) rawCorrelationId).getBytes();
-
-                decodedCorrelationId = new String(correlationIdAsByteArray, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.warn("extracted correlationId, but unable to decode it", e);
-            }
-        }
-
-        return decodedCorrelationId;
-
-
+    @RabbitListener(queues = QUEUE_NAME2)
+    public void abc(Message message, @Header(X_TENANT_CODE) String tenantCode) {
+        System.out.println("i'm coming 2nd");
+        System.out.println(tenantCode);
+        log.error(message.getMessageProperties().getHeaders().get(X_TENANT_CODE).toString());
     }
 }

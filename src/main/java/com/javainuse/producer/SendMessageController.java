@@ -1,6 +1,5 @@
 package com.javainuse.producer;
 
-import com.javainuse.ConfigureRabbitMq;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.core.MessagePropertiesBuilder;
@@ -29,9 +28,7 @@ public class SendMessageController {
 
         MessageProperties props = MessagePropertiesBuilder.newInstance().setContentType(MessageProperties.CONTENT_TYPE_JSON).build();
         props.setHeader(X_TENANT_CODE, "tenanta");
-
         Message msg = new Message("{'body':'value1','body2':value2}".getBytes(), props);
-
         rabbitTemplate.send(EXCHANGE_NAME, ROUTING_KEY, msg);
         return "We have sent a message! :" + themessage;
     }

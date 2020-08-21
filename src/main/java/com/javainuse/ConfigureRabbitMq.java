@@ -1,4 +1,5 @@
 package com.javainuse;
+
 import com.javainuse.consumer.ReceiveMessageHandler;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -15,40 +16,44 @@ public class ConfigureRabbitMq {
 
     public static final String EXCHANGE_NAME = "mikeexchange2";
     public static final String QUEUE_NAME = "mikequeue2";
+    public static final String QUEUE_NAME2 = "mikequeue2";
 
 
     @Bean
     Queue createQueue() {
         return new Queue(QUEUE_NAME, true, false, false);
     }
+//    @Bean
+//    Queue createQueue2() {
+//        return new Queue(QUEUE_NAME2, true, false, false);
+//    }
 
     @Bean
-    TopicExchange exchange(){
+    TopicExchange exchange() {
         return new TopicExchange(EXCHANGE_NAME);
     }
 
     @Bean
-    Binding binding(Queue q, TopicExchange exchange){
+    Binding binding(Queue q, TopicExchange exchange) {
         return BindingBuilder.bind(q).to(exchange).with("mike.#");
     }
 
 
-
-    @Bean
-    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory
-            , MessageListenerAdapter messageListenerAdapter){
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(QUEUE_NAME);
-        container.setMessageListener(messageListenerAdapter);
-        return container;
-    }
-
-
-    @Bean
-    MessageListenerAdapter listenerAdapter(ReceiveMessageHandler handler){
-        return new MessageListenerAdapter(handler, "extractCorrelationIdFromHeaders");
-    }
+//    @Bean
+//    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory
+//            , MessageListenerAdapter messageListenerAdapter){
+//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory);
+//        container.setQueueNames(QUEUE_NAME);
+//        container.setMessageListener(messageListenerAdapter);
+//        return container;
+//    }
+//
+//
+//    @Bean
+//    MessageListenerAdapter listenerAdapter(ReceiveMessageHandler handler){
+//        return new MessageListenerAdapter(handler, "handleMessage");
+//    }
 
 
 }
